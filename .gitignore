@@ -1,0 +1,12 @@
+node_modules
+coverage
+dist
+*.lock
+*.tmp
+.nyc_output
+build
+stats.json
+.nfs*
+.*DS*
+.DS*
+._*

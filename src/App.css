@@ -1,0 +1,108 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 10s linear;
+  height: 30px;
+  float: left;
+}
+
+body {
+  font-family: 'Noto Sans', sans-serif;
+}
+
+.grid {
+  height: 540px;
+  width:  330px;
+  padding: 20px;
+  color: green;
+}
+
+.header {
+  background-color: teal;
+  height: 60px;
+  color: white;
+  padding: 10px;
+  font-weight: bold;
+  font-size: 1.5em;
+  border: 3px solid;
+}
+
+small {
+  font-size: .5em;
+}
+
+.computer {
+  background-color: green;
+  height: 120px;
+  color: white;
+  padding: 20px;
+  border: 3px solid;
+} 
+
+.player {
+  background-color: #2aa;
+  height: 120px;
+  color: white;
+  padding: 20px;
+  border: 3px solid;
+}
+
+.player-button {
+  /* display: inline-block;  */
+  float: left;
+}
+
+.status {
+  background-color: #b27;
+  height: 135px;
+  color: white;
+  padding: 20px;
+  border: 3px solid;
+}
+
+.startbutton {
+  float: right;
+}
+
+.footer {
+  font-size: 0.8em;
+  float: left;
+  margin: 12px 0px 0px 3px;
+}
+
+#square {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  background-color: #fff;
+  border: 3px solid;
+  border-color: #000;
+  margin: 3px 3px 3px 0px; /* top right bottom left */
+  color: black;
+  font-size: 2em;
+  text-align: center;
+}
+
+Button {
+  margin: 5px 5px 5px 0px;
+}
+
+.App-title {
+  font-size: 1.5em;
+}
+
+.App-intro {
+  font-size: large;
+}
+
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.result {
+  font-weight: bold;
+  font-size: 1.3em;
+}

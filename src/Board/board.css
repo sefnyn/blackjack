@@ -1,0 +1,40 @@
+.board {
+  height: 300px;
+  width: 300px;
+  border: solid black;
+  border-width: 0 1px 1px 0 ;
+}
+
+.panel {
+  text-align: center;
+  margin-bottom: 50px;
+  background-color: #eee;
+}
+
+.inactive-cell {
+  color: #eee;
+}
+
+.empty-cell {
+  color: #eee;
+}
+
+.empty-cell:hover {
+  background-color: rgba(128, 128, 128, 0.38);
+  color: rgba(128, 128, 128, 0.38);
+  cursor: pointer;
+}
+
+.cell {
+  font-size: 5em;
+  border: solid black;
+  border-width: 1px 0 0 1px;
+  line-height: 99px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.message {
+  font-size: 1.5em;
+  margin-bottom: 20px;
+}
