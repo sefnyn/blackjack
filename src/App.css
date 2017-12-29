@@ -16,11 +16,11 @@ body {
   height: 540px;
   width:  330px;
   padding: 20px;
-  color: green;
+  color: #6e6e6e;
 }
 
 .header {
-  background-color: teal;
+  background-color: #2E2EFE;
   height: 60px;
   color: white;
   padding: 10px;
@@ -33,20 +33,31 @@ small {
   font-size: .5em;
 }
 
-.computer {
-  background-color: green;
-  height: 120px;
+.hangman-panel {
+  background-color: #642EFE;
+  height: 200px;
   color: white;
   padding: 20px;
   border: 3px solid;
 } 
 
-.player {
-  background-color: #2aa;
-  height: 120px;
+.hangman {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.word-panel {
+  background-color: #5882FA;
+  height: 200px;
   color: white;
-  padding: 20px;
+  padding:  20px;
   border: 3px solid;
+}
+
+.word {
+  font-size: 1.5em;
+  color: white;
 }
 
 .player-button {

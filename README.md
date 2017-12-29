@@ -1,4 +1,4 @@
-# Roshambo : a tiny web app built using ReactJS
+# Hangman : another tiny web app built using ReactJS
 
 ## Requirements
 

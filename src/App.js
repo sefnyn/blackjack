@@ -1,35 +1,27 @@
 /* Pieces of data required
 
-- game status: not started, started, game over, match over
-- score
-- current player
-- computer move
-- player move
-- game winner
-- match winner
-- moves/objects = [rock, paper, scissors]
+- random word
+- body parts
+- guessed letters
+
 
 Our state is:
-- game started
-- game over
-- match over
-- score [player, computer, draw]
-- current player
-- board [playerMove, computerMove]
-- game winner (calculated)
-- match winner (calculated)
+- currentLetter
+- mysteryWord
+
 
 */
 
 import React, { Component } from 'react';
 import logo from './logo.svg';
+import hangman0 from './images/145px-Hangman-0.png';
 import { Button, Grid, Col, Image } from 'react-bootstrap';
 import './App.css';
 
 class Header extends Component {
   render() {
     return (
-      <Col className='header'>Roshambo <small>Rock, paper, scissors</small></Col>
+      <Col className='header'>Hangman: <small>Guess the mystery word!</small></Col>
     );
   }
 }
@@ -38,34 +30,20 @@ class Computer extends Component {
   render() {
     return (
       <div>
-         <Button bsSize='small' disabled>{this.props.value}</Button>
       </div>
     );
   }
 }
 
-class Player extends Component {
+class MysteryWord extends Component {
   render() {
     return (
       <div>
-        <Button className='player-button' bsSize='small' onClick={() => this.props.onClick()}>
-          {this.props.value}
-        </Button>
+        <Col className='word'>Mystery word:</Col>
+        <Col className='word'>_ _ _ _ _ _ _ _</Col>
       </div>
     );
   }
-}
-
-function Status(props) {
-  console.log('Score ' + props.score);
-  return (
-    <div className='status'>
-      <Col>Computer: {props.score[1]}</Col>
-      <Col>Player: {props.score[0]}</Col>
-      <Col>Draw: {props.score[2]}</Col>
-      <Col className='result'>{props.status}</Col>
-    </div>
-  );
 }
 
 class Footer extends Component {
@@ -83,25 +61,15 @@ class Game extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      board: [null, '?'],
-      score: [0, 0, 0],
-      computerIsNext: false,
-      result: null
     };
   }
 
   handleClick(move) {
-    const board = this.state.board.slice();
-    board[0] = move;
-    this.setState({
-      board: board,
-      computerIsNext: !this.state.computerIsNext,
-    });
-    console.log('Board array: ' + this.state.board);
+    console.log('Board array: ');
   }
 
   render() {
-    const score = this.state.score;
+/*    const score = this.state.score;
     generateMove(this.state.board);
     const result = calculateWinner(this.state);
     let status;
@@ -110,21 +78,17 @@ class Game extends Component {
     } else {
       status = 'Next move: ' + (this.state.computerIsNext ? 'Computer' : 'Player');
     }
-
+*/
+    const word = 'hangman';
     return (
       <Grid className='grid'>
         <Header />
-        <div className='computer'>
-          <Col>Computer: {this.state.board[1]}</Col>
-          <Computer value={this.state.board[1]} />
+        <div className='hangman-panel'>
+         <Image className='hangman' src={hangman0} alt='hangman0'/>
         </div>
-        <div className='player'>
-          <Col>Player: {this.state.board[0]}</Col>
-          <Player value={'Rock'}     onClick={() => this.handleClick('Rock')}/>
-          <Player value={'Paper'}    onClick={() => this.handleClick('Paper')}/>
-          <Player value={'Scissors'} onClick={() => this.handleClick('Scissors')}/>
+        <div className='word-panel'>
+          <MysteryWord word={word} />
         </div>
-        <Status score={score} status={status}/>
         <Footer />
       </Grid>
     );
@@ -138,7 +102,7 @@ class App extends Component {
     );
   }
 }
-
+/*
 function calculateWinner(state) {
   const playerMove = state.board[0];
   const computerMove = state.board[1];
@@ -168,11 +132,12 @@ function generateMove(board) {
   if (board[0] == null) {
     return null;
   } else {
-    /* generate random move */
     var random = Math.floor(Math.random() * 3);
     board[1] = objects[random];
     return board;
   }
 }
+
+*/
 
 export default App;
