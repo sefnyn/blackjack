@@ -39,8 +39,18 @@ class MysteryWord extends Component {
   render() {
     return (
       <div>
-        <Col className='word'>Mystery word:</Col>
-        <Col className='word'>_ _ _ _ _ _ _ _</Col>
+        <Col className='word'>Mystery word: {this.props.word}</Col>
+        <Col className='word'>{this.props.mystery}</Col>
+      </div>
+    );
+  }
+}
+
+class Guesses extends Component {
+  render() {
+    return (
+      <div>
+        <Col className='guesses'>Guesses: {this.props.letters}</Col>
       </div>
     );
   }
@@ -61,6 +71,9 @@ class Game extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      word: 'hangman',
+      mystery: '_ _ _ _ _ _ _',
+      letters: ['e', 'o', 'u'],
     };
   }
 
@@ -79,7 +92,9 @@ class Game extends Component {
       status = 'Next move: ' + (this.state.computerIsNext ? 'Computer' : 'Player');
     }
 */
-    const word = 'hangman';
+    const word = this.state.word;
+    const mystery = this.state.mystery;
+    const letters = this.state.letters;
     return (
       <Grid className='grid'>
         <Header />
@@ -87,7 +102,8 @@ class Game extends Component {
          <Image className='hangman' src={hangman0} alt='hangman0'/>
         </div>
         <div className='word-panel'>
-          <MysteryWord word={word} />
+          <MysteryWord word={word} mystery={mystery} />
+          <Guesses letters={letters} />
         </div>
         <Footer />
       </Grid>

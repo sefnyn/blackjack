@@ -43,8 +43,7 @@ small {
 
 .hangman {
   display: block;
-  margin-left: auto;
-  margin-right: auto;
+  margin-left: 25px;
 }
 
 .word-panel {
@@ -60,6 +59,10 @@ small {
   color: white;
 }
 
+.guesses {
+  font-size: 1.5em;
+  margin-top: 30px;
+}
 .player-button {
   /* display: inline-block;  */
   float: left;

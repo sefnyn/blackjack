@@ -2,7 +2,7 @@
   "name": "roshambo",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://sefnyn.github.io/roshambo",
+  "homepage": "https://sefnyn.github.io/hangman",
   "dependencies": {
     "gh-pages": "^1.1.0",
     "react": "^16.2.0",
