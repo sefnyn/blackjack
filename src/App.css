@@ -48,7 +48,7 @@ small {
 
 .word-panel {
   background-color: #5882FA;
-  height: 200px;
+  height: 140px;
   color: white;
   padding:  20px;
   border: 3px solid;
@@ -61,8 +61,22 @@ small {
 
 .guesses {
   font-size: 1.5em;
-  margin-top: 30px;
+  margin-top: 20px;
 }
+
+.enter {
+  width: 285px;
+  font-size: 1.5em;
+  background-color: #5882FA;
+  height: 50px;
+  color: white;
+  padding-left: 20px;
+  border-width: 0px;
+  border: none;
+  margin-left: 2px;
+
+}
+
 .player-button {
   /* display: inline-block;  */
   float: left;
