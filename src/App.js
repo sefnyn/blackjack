@@ -14,14 +14,28 @@ Our state is:
 
 import React, { Component } from 'react';
 import logo from './logo.svg';
-import hangman0 from './images/145px-Hangman-0.png';
 import { Grid, Col, Image } from 'react-bootstrap';
+import hangman0 from './images/145px-Hangman-0.png';
+import hangman1 from './images/145px-Hangman-1.png';
+import hangman2 from './images/145px-Hangman-2.png';
+import hangman3 from './images/145px-Hangman-3.png';
+import hangman4 from './images/145px-Hangman-4.png';
+import hangman5 from './images/145px-Hangman-5.png';
+import hangman6 from './images/145px-Hangman-6.png';
 import './App.css';
 
 class Header extends Component {
   render() {
     return (
       <Col className='header'>Hangman: <small>Guess the mystery word!</small></Col>
+    );
+  }
+}
+
+class DrawHangman extends Component {
+  render() {
+    return (
+      <Image className='hangman' src={this.props.value} alt={this.props.value} />
     );
   }
 }
@@ -66,6 +80,7 @@ class Game extends Component {
       mystery: '_ _ _ _ _ _ _',
       letters: ['e', 'o', 'u'],
       value: '',
+      drawingIndex: 0,
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -77,13 +92,8 @@ class Game extends Component {
   }
 
   handleSubmit(e) {
-    alert('A letter was submitted: ' + this.state.value);
+    console.log('letter entered: ' + this.state.value);
     e.preventDefault();
-  }
-
-
-  handleClick(move) {
-    console.log('Board array: ');
   }
 
   render() {
@@ -100,11 +110,12 @@ class Game extends Component {
     const word = this.state.word;
     const mystery = this.state.mystery;
     const letters = this.state.letters;
+    const drawings = [hangman0, hangman1, hangman2, hangman3, hangman4, hangman5, hangman6];
     return (
       <Grid className='grid'>
         <Header />
         <div className='hangman-panel'>
-         <Image className='hangman' src={hangman0} alt='hangman0' />
+          <DrawHangman value={drawings[this.state.drawingIndex]} /> 
         </div>
         <div className='word-panel'>
           <MysteryWord word={word} mystery={mystery} />
@@ -114,7 +125,7 @@ class Game extends Component {
           <form onSubmit={this.handleSubmit}>
             <input className='enter'
               type='text'
-              placeholder='Enter letter...'
+              placeholder='Please enter one letter...'
               maxLength='1'
               required
               value={this.state.value}
