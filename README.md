@@ -1,4 +1,4 @@
-# Hangman : another tiny web app built using ReactJS
+# Blackjack : a slightly more complicated web app built using ReactJS
 
 ## Requirements
 
