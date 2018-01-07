@@ -20,7 +20,7 @@ body {
 }
 
 .header {
-  background-color: #2E2EFE;
+  background-color: black;
   height: 60px;
   color: white;
   padding: 10px;
@@ -33,41 +33,33 @@ small {
   font-size: .5em;
 }
 
-.hangman-panel {
-  background-color: #642EFE;
-  height: 200px;
+.card-panel {
+  background-color: darkred;
+  height: 240px;
   color: white;
   padding: 20px;
   border: 3px solid;
+  margin-left: auto;
+  margin-right: auto;
 } 
 
-.hangman {
-  display: block;
-  margin-left: 25px;
-}
-
-.word-panel {
-  background-color: #5882FA;
-  height: 140px;
+.money-panel {
+  background-color: slategrey;
+  height: 70px;
   color: white;
   padding:  20px;
   border: 3px solid;
 }
 
-.word {
+.balance {
   font-size: 1.5em;
   color: white;
-}
-
-.guesses {
-  font-size: 1.5em;
-  margin-top: 20px;
 }
 
 .enter {
   width: 285px;
   font-size: 1.5em;
-  background-color: #5882FA;
+  background-color: lightgrey;
   height: 50px;
   color: white;
   padding-left: 20px;
