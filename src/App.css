@@ -35,13 +35,19 @@ small {
 
 .card-panel {
   background-color: darkred;
-  height: 240px;
+  height: 300px;
   color: white;
-  padding: 20px;
+  padding: 10px;
   border: 3px solid;
   margin-left: auto;
   margin-right: auto;
 } 
+
+.cards {
+  width: 20%;
+  height: auto;
+
+}
 
 .money-panel {
   background-color: slategrey;
@@ -75,11 +81,9 @@ small {
 }
 
 .status {
-  background-color: #b27;
-  height: 135px;
   color: white;
   padding: 20px;
-  border: 3px solid;
+  display: inline-block;
 }
 
 .startbutton {
