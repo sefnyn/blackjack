@@ -1,8 +1,8 @@
 {
-  "name": "hangman",
+  "name": "blackjack",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://sefnyn.github.io/hangman",
+  "homepage": "https://sefnyn.github.io/blackjack",
   "dependencies": {
     "gh-pages": "^1.1.0",
     "react": "^16.2.0",
