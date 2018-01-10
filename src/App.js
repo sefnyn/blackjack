@@ -13,7 +13,7 @@ Our state is:
 - game over
 - dealer winner
 - balance
-- bet in progress
+- betting
 - next card
 
 */
@@ -124,11 +124,12 @@ function RenderDealerCards(props) {
     );
     return (
       <div>
-        <Col>Dealer:</Col>
+        <Col>Dealer: {props.total}</Col>
         {cards}
       </div>
     );
   }
+  //render Welcome screen if zero cards in Dealer's hand
   return <Welcome />;
 }
 
@@ -140,8 +141,9 @@ function RenderPlayerCards(props) {
     );
     return (
       <div>
-        <Col>Player:</Col>
+        <Col>Player: {props.total}</Col>
         {cards}
+        <Actions />
       </div>
     );
   }
@@ -152,7 +154,7 @@ class Balance extends Component {
   render() {
     return (
       <div>
-        <Col>You have £ {this.props.money}.&nbsp;&nbsp;</Col>
+        <Col>You have £ {this.props.money}.</Col>
       </div>
     );
   }
@@ -173,10 +175,12 @@ class Game extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      deck: shuffleDeck(),
+      deck: shuffleDeck(), //returns object { images, values }
       nextCard: null,
-      dealerHand: [],
-      playerHand: [],
+      dealerCardsImages: [],
+      playerCardsImages: [],
+      dealerCardsValues: [],
+      playerCardsValues: [],
       value: '', /* bet */
       balance: 500,
       startingHand: true,
@@ -184,6 +188,11 @@ class Game extends Component {
       gameOver: false,
       betting: true,
       status: '',
+      playing: false,
+      playerTotal: 0,
+      dealerTotal: 0,
+      playerAce: false,
+      dealerAce: false,
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -202,11 +211,12 @@ class Game extends Component {
     const bet = this.state.value;
     const balance = this.state.balance;
     if (bet <= balance) {
-      const playerHand = this.state.playerHand.slice();
+      const playerCardsImages = this.state.playerCardsImages.slice();
       this.setState({
         value: bet,
-        playerHand: playerHand,
+        playerCardsImages: playerCardsImages,
         betting: false,
+        playing: true,
         balance: balance - bet,
       });
     } else {
@@ -223,18 +233,17 @@ class Game extends Component {
     const result = playHand(this.state);
     let status;
     if (result) {
-      status = result;
+       status = result;
     } else {
-        status = '';
+       status = '';
     }
 
     return (
       <Grid className='grid'>
         <Header />
         <div className='card-panel'>
-          <RenderDealerCards cards={this.state.dealerHand} />
-          <RenderPlayerCards cards={this.state.playerHand} />
-          <Actions /> 
+          <RenderDealerCards cards={this.state.dealerCardsImages} total={this.state.dealerTotal}/>
+          <RenderPlayerCards cards={this.state.playerCardsImages} total={this.state.playerTotal}/>
           <Status status={status} />
         </div>
         <div className='balance'>
@@ -271,24 +280,29 @@ function dealThreeCards(state) {
   getPlayerCard(state);
   getDealerCard(state);
   getPlayerCard(state);
-  console.log('state.deck length ' + state.deck.length);
+  console.log('state.deck.images length ' + state.deck.images.length);
+  console.log('state.deck.values length ' + state.deck.values.length);
 }
 
 function getPlayerCard(state) {
   const deck = state.deck;
-  const card = deck.pop();
-  const playerHand = state.playerHand;
-  playerHand.push(card);
-  console.log('getPlayerCard');
+  const card = deck.images.pop();
+  const playerCardsImages  = state.playerCardsImages;
+  const value = deck.values.pop()
+  state.playerTotal = state.playerTotal + value;
+  playerCardsImages.push(card);
+  console.log('getting PlayerCard, value is ' + value);
   return null;
 }
 
 function getDealerCard(state) {
   const deck = state.deck;
-  const card = deck.pop();
-  const dealerHand = state.dealerHand;
-  dealerHand.push(card);
-  console.log('getDealerCard ' + card);
+  const card = deck.images.pop();
+  const dealerCardsImages = state.dealerCardsImages;
+  const value = deck.values.pop();
+  state.dealerTotal = state.dealerTotal + value;
+  dealerCardsImages.push(card);
+  console.log('getting DealerCard, value is ' + value);
   return null;
 }
 
@@ -302,26 +316,42 @@ function playHand(state) {
 function shuffleDeck() {
 /* Returns array shuffledDeck */
   console.log('Shuffling deck...');
-  const clubs    = [c2, c3, c4, c5, c6, c7, c8, c9, tc, jc, qc, kc, ac];
-  const diamonds = [d2, d3, d4, d5, d6, d7, d8, d9, td, jd, qd, kd, ad];
-  const hearts   = [h2, h3, h4, h5, h6, h7, h8, h9, th, jh, qh, kh, ah];
-  const spades   = [s2, s3, s4, s5, s6, s7, s8, s9, ts, js, qs, ks, as];
+  const clubs    = [ac, c2, c3, c4, c5, c6, c7, c8, c9, tc, jc, qc, kc];
+  const diamonds = [ad, d2, d3, d4, d5, d6, d7, d8, d9, td, jd, qd, kd];
+  const hearts   = [ah, h2, h3, h4, h5, h6, h7, h8, h9, th, jh, qh, kh];
+  const spades   = [as, s2, s3, s4, s5, s6, s7, s8, s9, ts, js, qs, ks];
 
-  var deck = clubs.concat(diamonds);
+  var deck = clubs;
+  deck = deck.concat(diamonds);
   deck = deck.concat(hearts);
   deck = deck.concat(spades);
+
+  const valuesOrdered = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10];
+  var deckValues = valuesOrdered;
+  deckValues = deckValues.concat(valuesOrdered);
+  deckValues = deckValues.concat(valuesOrdered);
+  deckValues = deckValues.concat(valuesOrdered);
+
 //  console.log(deck);
   
-  var shuffledDeck = [];
+  var images = [];
+  var values = [];
   for (var index=52; index > 0; index--) {
     var randomIndex = Math.floor(Math.random() * index);
+
+    //process image
     var card = deck[randomIndex];
-    shuffledDeck.push(card);
+    images.push(card);
     deck.splice(randomIndex, 1); //remove card
+
+    //process value
+    var val = deckValues[randomIndex];
+    values.push(val);
+    deckValues.splice(randomIndex, 1); //remove card
   }
-  console.log('shuffledDeck length ' + shuffledDeck.length);
-  console.log('deck length ' + deck.length);
-  return shuffledDeck;
+  console.log('shuffled images length ' + images.length);
+  console.log('shuffled values length ' + values.length);
+  return { images, values };
 }
 
 
