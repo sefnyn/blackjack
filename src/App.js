@@ -22,6 +22,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import { Grid, Col, Image } from 'react-bootstrap';
 import './App.css';
+import cardback from './cards/b.gif';
 
 //clubs
 import c2 from  './cards/2c.gif';
@@ -91,6 +92,17 @@ class Header extends Component {
   }
 }
 
+function Welcome() {
+  return (
+    <div >
+      <Image className='big-card' src={jc} />
+      <Image className='big-card' src={cardback} />
+      <Image className='big-card' src={cardback} />
+      <Image className='big-card' src={js} />
+    </div>
+  );
+}
+
 class Status extends Component {
   render() {
     return (
@@ -99,37 +111,48 @@ class Status extends Component {
   }
 }
 
+function Actions(props) {
+//split or double or stand or hit
+  return null;
+}
+
 function RenderDealerCards(props) {
   const hand  = props.cards;
-  const cards = hand.map((card) =>
-    <Image key={card} className='cards' src={card} />
-  );
-  return (
-    <div>
-      <Col>Dealer:</Col>
-      {cards}
-    </div>
-  );
+  if (hand.length > 0) {
+    const cards = hand.map((card) =>
+      <Image key={card} className='cards' src={card} />
+    );
+    return (
+      <div>
+        <Col>Dealer:</Col>
+        {cards}
+      </div>
+    );
+  }
+  return <Welcome />;
 }
 
 function RenderPlayerCards(props) {
   const hand  = props.cards;
-  const cards = hand.map((card) =>
-    <Image key={card} className='cards' src={card} />
-  );
-  return (
-    <div>
-      <Col>Player:</Col>
-      {cards}
-    </div>
-  );
+  if (hand.length > 0) {
+    const cards = hand.map((card) =>
+      <Image key={card} className='cards' src={card} />
+    );
+    return (
+      <div>
+        <Col>Player:</Col>
+        {cards}
+      </div>
+    );
+  }
+  return null;
 }
 
 class Balance extends Component {
   render() {
     return (
       <div>
-        <Col className='balance'>You have £ {this.props.money}</Col>
+        <Col>You have £ {this.props.money}.&nbsp;&nbsp;</Col>
       </div>
     );
   }
@@ -150,16 +173,17 @@ class Game extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      deck: [],
+      deck: shuffleDeck(),
       nextCard: null,
-      dealerHand: [ac, c2, d2, h2, s2, c3],
-      playerHand: [as, td],
+      dealerHand: [],
+      playerHand: [],
       value: '', /* bet */
       balance: 500,
-      startHand: true,
+      startingHand: true,
       handOver: false,
       gameOver: false,
-      betOver: false,
+      betting: true,
+      status: '',
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -182,7 +206,7 @@ class Game extends Component {
       this.setState({
         value: bet,
         playerHand: playerHand,
-        betOver: true,
+        betting: false,
         balance: balance - bet,
       });
     } else {
@@ -191,17 +215,17 @@ class Game extends Component {
   }
 
   render() {
-//    const deck = shuffleDeck(this.state); 
-    const startHand = this.state.startHand;
-    if (startHand) {
-      dealFourCards(this.state);
+    const startingHand = this.state.startingHand;
+    const betting   = this.state.betting;
+    if (startingHand && !betting) {
+      dealThreeCards(this.state);
     }
     const result = playHand(this.state);
     let status;
     if (result) {
       status = result;
     } else {
-        status = 'Status';
+        status = '';
     }
 
     return (
@@ -210,21 +234,22 @@ class Game extends Component {
         <div className='card-panel'>
           <RenderDealerCards cards={this.state.dealerHand} />
           <RenderPlayerCards cards={this.state.playerHand} />
+          <Actions /> 
           <Status status={status} />
         </div>
-        <div className='money-panel'>
+        <div className='balance'>
           <Balance money={this.state.balance} />
         </div>
-        <div>
+        <div className='bet'>
           <form onSubmit={this.handleSubmit}>
             <input className='enter'
               type='number'
-              placeholder='Place your bet...'
+              placeholder='Bet?'
               required
               value={this.state.value}
               onChange={this.handleChange}
-              disabled={this.state.betOver}
-              alt='Place your bet'
+              disabled={!this.state.betting}
+              alt='Bet?'
             />
           </form>
         </div>
@@ -242,23 +267,30 @@ class App extends Component {
   }
 }
 
-function dealFourCards(state) {
-  //to do
-  const len = state.deck.length;
-  if (len <= 14) { //14 because unlikely for each player to have 7 cards
-    state.deck = shuffleDeck(state);
-  }
-  for (var i=1; i<5; i++) {
-    dealCard();
-  }
+function dealThreeCards(state) {
+  getPlayerCard(state);
+  getDealerCard(state);
+  getPlayerCard(state);
+  console.log('state.deck length ' + state.deck.length);
 }
 
-function dealCard(state) {
-
-
-
+function getPlayerCard(state) {
+  const deck = state.deck;
+  const card = deck.pop();
+  const playerHand = state.playerHand;
+  playerHand.push(card);
+  console.log('getPlayerCard');
+  return null;
 }
 
+function getDealerCard(state) {
+  const deck = state.deck;
+  const card = deck.pop();
+  const dealerHand = state.dealerHand;
+  dealerHand.push(card);
+  console.log('getDealerCard ' + card);
+  return null;
+}
 
 function playHand(state) {
   //to do
@@ -267,19 +299,29 @@ function playHand(state) {
 }
 
 
-function shuffleDeck(state) {
+function shuffleDeck() {
+/* Returns array shuffledDeck */
   console.log('Shuffling deck...');
   const clubs    = [c2, c3, c4, c5, c6, c7, c8, c9, tc, jc, qc, kc, ac];
   const diamonds = [d2, d3, d4, d5, d6, d7, d8, d9, td, jd, qd, kd, ad];
   const hearts   = [h2, h3, h4, h5, h6, h7, h8, h9, th, jh, qh, kh, ah];
   const spades   = [s2, s3, s4, s5, s6, s7, s8, s9, ts, js, qs, ks, as];
 
-  var deck = state.deck;
-  deck = clubs.concat(diamonds);
+  var deck = clubs.concat(diamonds);
   deck = deck.concat(hearts);
   deck = deck.concat(spades);
 //  console.log(deck);
-  return deck;
+  
+  var shuffledDeck = [];
+  for (var index=52; index > 0; index--) {
+    var randomIndex = Math.floor(Math.random() * index);
+    var card = deck[randomIndex];
+    shuffledDeck.push(card);
+    deck.splice(randomIndex, 1); //remove card
+  }
+  console.log('shuffledDeck length ' + shuffledDeck.length);
+  console.log('deck length ' + deck.length);
+  return shuffledDeck;
 }
 
 

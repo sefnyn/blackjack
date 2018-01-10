@@ -35,7 +35,7 @@ small {
 
 .card-panel {
   background-color: darkred;
-  height: 300px;
+  height: 350px;
   color: white;
   padding: 10px;
   border: 3px solid;
@@ -46,33 +46,41 @@ small {
 .cards {
   width: 20%;
   height: auto;
-
-}
-
-.money-panel {
-  background-color: slategrey;
-  height: 70px;
-  color: white;
-  padding:  20px;
-  border: 3px solid;
 }
 
 .balance {
-  font-size: 1.5em;
-  color: white;
-}
-
-.enter {
-  width: 285px;
-  font-size: 1.5em;
-  background-color: lightgrey;
+  background-color: slategrey;
   height: 50px;
   color: white;
-  padding-left: 20px;
+  padding-left: 10px;
+  padding-top: 7px;
+  border: 3px solid;
+  width: 195px;
+  font-size: 1.3em;
+  float: left;
+}
+
+.bet {
+  width: 90px;
+  height: 44px;
+  font-size: 1.3em;
+  background-color: lightgrey;
+  color: black;
+  padding-left: 2px;
+  padding-top: 2px;
+
   border-width: 0px;
   border: none;
   margin-left: 2px;
+  margin-top: 2px;
+  float: left;
+}
 
+.enter {
+  width: 86px;
+  height: 40px;
+  font-size: 1.1em;
+  background-color: lightgrey;
 }
 
 .player-button {
@@ -96,19 +104,6 @@ small {
   margin: 12px 0px 0px 3px;
 }
 
-#square {
-  display: inline-block;
-  width: 50px;
-  height: 50px;
-  background-color: #fff;
-  border: 3px solid;
-  border-color: #000;
-  margin: 3px 3px 3px 0px; /* top right bottom left */
-  color: black;
-  font-size: 2em;
-  text-align: center;
-}
-
 Button {
   margin: 5px 5px 5px 0px;
 }
@@ -129,4 +124,10 @@ Button {
 .result {
   font-weight: bold;
   font-size: 1.3em;
+}
+
+.big-card {
+  width: 35%;
+  margin: 5px;
+  margin-left: 25px;
 }
