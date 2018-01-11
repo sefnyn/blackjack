@@ -20,7 +20,7 @@ Our state is:
 
 import React, { Component } from 'react';
 import logo from './logo.svg';
-import { Grid, Col, Image } from 'react-bootstrap';
+import { Grid, Col, Image, Button } from 'react-bootstrap';
 import './App.css';
 import cardback from './cards/b.gif';
 
@@ -113,11 +113,25 @@ class Status extends Component {
 
 function Actions(props) {
 //split or double or stand or hit
+  let hand = props.state.playerCardsValues;
+  let noPlay   = !props.state.playing;
+  let noSplit  = !props.state.split;
+  let noDouble = !props.state.double;
+  if (hand.length > 0) {
+    return (
+      <div className='actions'>
+        <Button bsStyle='primary' bsSize='small' disabled={noPlay}>Stand</Button>
+        <Button bsStyle='primary' bsSize='small' disabled={noSplit}>Split</Button>
+        <Button bsStyle='primary' bsSize='small' disabled={noDouble}>Double</Button>
+        <Button bsStyle='primary' bsSize='small' disabled={noPlay}>Hit</Button>
+      </div>    
+    );
+  }
   return null;
 }
 
 function RenderDealerCards(props) {
-  const hand  = props.cards;
+  const hand = props.cards;
   if (hand.length > 0) {
     const cards = hand.map((card) =>
       <Image key={card} className='cards' src={card} />
@@ -143,7 +157,6 @@ function RenderPlayerCards(props) {
       <div>
         <Col>Player: {props.total}</Col>
         {cards}
-        <Actions />
       </div>
     );
   }
@@ -176,7 +189,6 @@ class Game extends Component {
     super(props);
     this.state = {
       deck: shuffleDeck(), //returns object { images, values }
-      nextCard: null,
       dealerCardsImages: [],
       playerCardsImages: [],
       dealerCardsValues: [],
@@ -193,6 +205,11 @@ class Game extends Component {
       dealerTotal: 0,
       playerAce: false,
       dealerAce: false,
+      double: false,
+      split: false,
+      splitCardsImages: [],
+      splitCardsValues: [],
+      splitTotal: 0,
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -244,6 +261,7 @@ class Game extends Component {
         <div className='card-panel'>
           <RenderDealerCards cards={this.state.dealerCardsImages} total={this.state.dealerTotal}/>
           <RenderPlayerCards cards={this.state.playerCardsImages} total={this.state.playerTotal}/>
+          <Actions state={this.state} />
           <Status status={status} />
         </div>
         <div className='balance'>
@@ -287,10 +305,10 @@ function dealThreeCards(state) {
 function getPlayerCard(state) {
   const deck = state.deck;
   const card = deck.images.pop();
-  const playerCardsImages  = state.playerCardsImages;
   const value = deck.values.pop()
   state.playerTotal = state.playerTotal + value;
-  playerCardsImages.push(card);
+  state.playerCardsImages.push(card);
+  state.playerCardsValues.push(value);
   console.log('getting PlayerCard, value is ' + value);
   return null;
 }
@@ -298,10 +316,10 @@ function getPlayerCard(state) {
 function getDealerCard(state) {
   const deck = state.deck;
   const card = deck.images.pop();
-  const dealerCardsImages = state.dealerCardsImages;
   const value = deck.values.pop();
   state.dealerTotal = state.dealerTotal + value;
-  dealerCardsImages.push(card);
+  state.dealerCardsImages.push(card);
+  state.dealerCardsValues.push(value);
   console.log('getting DealerCard, value is ' + value);
   return null;
 }

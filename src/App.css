@@ -104,8 +104,15 @@ small {
   margin: 12px 0px 0px 3px;
 }
 
+.actions {
+  margin-left: 10px;
+}
+
 Button {
-  margin: 5px 5px 5px 0px;
+  background-color: black;
+  color: white;
+  margin: 20px 13px 13px 0px;
+  float: left;
 }
 
 .App-title {
