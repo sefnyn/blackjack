@@ -14,7 +14,10 @@ Our state is:
 - dealer winner
 - balance
 - betting
-- next card
+- dealer total
+- player total
+- split
+- double
 
 */
 
@@ -111,23 +114,36 @@ class Status extends Component {
   }
 }
 
-function Actions(props) {
-//split or double or stand or hit
-  let hand = props.state.playerCardsValues;
-  let noPlay   = !props.state.playing;
-  let noSplit  = !props.state.split;
-  let noDouble = !props.state.double;
-  if (hand.length > 0) {
-    return (
-      <div className='actions'>
-        <Button bsStyle='primary' bsSize='small' disabled={noPlay}>Stand</Button>
-        <Button bsStyle='primary' bsSize='small' disabled={noSplit}>Split</Button>
-        <Button bsStyle='primary' bsSize='small' disabled={noDouble}>Double</Button>
-        <Button bsStyle='primary' bsSize='small' disabled={noPlay}>Hit</Button>
-      </div>    
-    );
-  }
-  return null;
+function StandButton(props){
+  return (
+    <Button bsStyle='primary' bsSize='small' disabled={props.noPlay} onClick={props.onClick}>
+      Stand
+    </Button>
+  );
+}
+
+function SplitButton(props) {
+  return (
+    <Button bsStyle='primary' bsSize='small' disabled={props.noSplit} onClick={props.onClick}>
+      Split
+    </Button>
+  );
+}
+
+function DoubleButton(props) {
+  return (
+    <Button bsStyle='primary' bsSize='small' disabled={props.noDouble} onClick={props.onClick}>
+      Double
+    </Button>
+  );
+}
+
+function HitButton(props) {
+  return (
+    <Button bsStyle='primary' bsSize='small' disabled={props.noPlay} onClick={props.onClick}>
+      Hit
+    </Button>
+  );
 }
 
 function RenderDealerCards(props) {
@@ -195,12 +211,12 @@ class Game extends Component {
       playerCardsValues: [],
       value: '', /* bet */
       balance: 500,
-      startingHand: true,
+      startingNewHand: true,
       handOver: false,
       gameOver: false,
       betting: true,
       status: '',
-      playing: false,
+      playerPlaying: false,
       playerTotal: 0,
       dealerTotal: 0,
       playerAce: false,
@@ -210,6 +226,8 @@ class Game extends Component {
       splitCardsImages: [],
       splitCardsValues: [],
       splitTotal: 0,
+      playerBust: false,
+      dealerBust: false,
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -233,7 +251,7 @@ class Game extends Component {
         value: bet,
         playerCardsImages: playerCardsImages,
         betting: false,
-        playing: true,
+        playerPlaying: true,
         balance: balance - bet,
       });
     } else {
@@ -241,13 +259,60 @@ class Game extends Component {
     }
   }
 
+  handleClickHit() {
+    const images = this.state.playerCardsImages.slice();
+    const values = this.state.playerCardsValues.slice();
+    const deck = this.state.deck;
+    const card = deck.images.pop();
+    const value  = deck.values.pop();
+    let total = this.state.playerTotal;
+    images.push(card);
+    values.push(value);
+    total = total + value;
+    if (value === 1) { this.setState({ playerAce: true }); }
+    if (value > 21)  { this.setState({ playerBust: true }); }
+    this.setState({
+      playerCardsImages: images,
+      playerCardsValues: values,
+      playerTotal: total,
+      betting: false,
+      startingNewHand: false,
+    });
+  }
+
+  handleClickStand() {
+    this.setState({
+      playerPlaying: false,
+      betting: false,
+      startingNewHand: false,
+    });
+  }
+
+  renderButtons() {
+    let hand     = this.state.playerCardsValues;
+    let noPlay   = !this.state.playerPlaying;
+    let noSplit  = !this.state.split;
+    let noDouble = !this.state.double;
+    if (hand.length > 0) {
+      return (
+        <div className='actions'>
+          <StandButton noplay={noPlay}      onClick={() => this.handleClickStand()}/>
+          <SplitButton noSplit={noSplit} />
+          <DoubleButton noDouble={noDouble} />
+          <HitButton noPlay={noPlay}        onClick={() => this.handleClickHit()}/>
+        </div>    
+      );
+    }
+    return null;
+  }
+
   render() {
-    const startingHand = this.state.startingHand;
+    const startingNewHand = this.state.startingNewHand;
     const betting   = this.state.betting;
-    if (startingHand && !betting) {
+    if (startingNewHand && !betting) {
       dealThreeCards(this.state);
     }
-    const result = playHand(this.state);
+    const result = calculateWinner(this.state);
     let status;
     if (result) {
        status = result;
@@ -261,7 +326,7 @@ class Game extends Component {
         <div className='card-panel'>
           <RenderDealerCards cards={this.state.dealerCardsImages} total={this.state.dealerTotal}/>
           <RenderPlayerCards cards={this.state.playerCardsImages} total={this.state.playerTotal}/>
-          <Actions state={this.state} />
+          {this.renderButtons()}
           <Status status={status} />
         </div>
         <div className='balance'>
@@ -298,8 +363,6 @@ function dealThreeCards(state) {
   getPlayerCard(state);
   getDealerCard(state);
   getPlayerCard(state);
-  console.log('state.deck.images length ' + state.deck.images.length);
-  console.log('state.deck.values length ' + state.deck.values.length);
 }
 
 function getPlayerCard(state) {
@@ -310,7 +373,7 @@ function getPlayerCard(state) {
   state.playerCardsImages.push(card);
   state.playerCardsValues.push(value);
   console.log('getting PlayerCard, value is ' + value);
-  return null;
+  return [card, value];
 }
 
 function getDealerCard(state) {
@@ -321,10 +384,10 @@ function getDealerCard(state) {
   state.dealerCardsImages.push(card);
   state.dealerCardsValues.push(value);
   console.log('getting DealerCard, value is ' + value);
-  return null;
+  return [card, value];
 }
 
-function playHand(state) {
+function calculateWinner(state) {
   //to do
 
 
