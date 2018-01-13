@@ -1,7 +1,10 @@
 {
   "main.css": "static/css/main.769363aa.css",
   "main.css.map": "static/css/main.769363aa.css.map",
-  "main.js": "static/js/main.bfadc090.js",
-  "main.js.map": "static/js/main.bfadc090.js.map",
+  "main.js": "static/js/main.e79d441e.js",
+  "main.js.map": "static/js/main.e79d441e.js.map",
+  "static/media/boo.mp3": "static/media/boo.b9d3da54.mp3",
+  "static/media/cheer.mp3": "static/media/cheer.3cd45a7f.mp3",
+  "static/media/drum.mp3": "static/media/drum.4779d0b2.mp3",
   "static/media/logo.svg": "static/media/logo.5d5d9eef.svg"
 }
