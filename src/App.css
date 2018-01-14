@@ -35,7 +35,7 @@ small {
 
 .card-panel {
   background-color: darkred;
-  height: 350px;
+  height: 375px;
   color: white;
   padding: 10px;
   border: 3px solid;
@@ -89,9 +89,14 @@ small {
 }
 
 .status {
+  margin: 20px 10px 10px 10px;
+  font-size: 1.3em;
   color: white;
-  padding: 5x;
   display: inline-block;
+}
+
+.play-again {
+  float: right;
 }
 
 .startbutton {
@@ -109,8 +114,6 @@ small {
 }
 
 Button {
-  background-color: black;
-  color: white;
   margin: 20px 13px 13px 0px;
   float: left;
 }
@@ -137,4 +140,9 @@ Button {
   width: 35%;
   margin: 5px;
   margin-left: 25px;
+}
+
+.numcards {
+  font-size: 0.8em;
+  margin-left: 8em;
 }

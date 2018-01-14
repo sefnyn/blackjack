@@ -26,6 +26,9 @@ import logo from './logo.svg';
 import { Grid, Col, Image, Button } from 'react-bootstrap';
 import './App.css';
 import cardback from './cards/b.gif';
+import drum  from './sound/drum.mp3';
+import boo   from './sound/boo.mp3';
+import cheer from './sound/cheer.mp3';
 
 //clubs
 import c2 from  './cards/2c.gif';
@@ -87,31 +90,43 @@ import qs from  './cards/qs.gif';
 import ks from  './cards/ks.gif';
 import as from  './cards/as.gif';
 
-class Header extends Component {
-  render() {
-    return (
-      <Col className='header'>Blackjack: <small>try to beat the house!</small></Col>
-    );
-  }
+function Header() {
+  return (
+    <Col className='header'>Blackjack: <small>try to beat the house!</small></Col>
+  );
 }
 
-function Welcome() {
+function Welcome(props) {
   return (
     <div >
       <Image className='big-card' src={jc} />
       <Image className='big-card' src={cardback} />
       <Image className='big-card' src={cardback} />
       <Image className='big-card' src={js} />
+      <RenderCardsInDeck numCards={props.numCards} />
     </div>
   );
 }
 
-class Status extends Component {
-  render() {
-    return (
-      <Col className='status'>{this.props.status}</Col>
-    );
-  }
+function Footer() {
+  return (
+    <div>
+      <Col className='footer'>BJ v.0.6 written by Syrotiuk. Powered by React</Col>
+      <Image className='App-logo' alt='logo' src={logo}/>
+    </div>
+  );
+}
+
+function RenderCardsInDeck(props) {
+  return (
+    <Col className='numcards'>{props.numCards} cards in deck</Col>
+  );
+}
+
+function Status(props) {
+  return (
+    <Col className='status'>{props.status}</Col>
+  );
 }
 
 function StandButton(props){
@@ -146,32 +161,40 @@ function HitButton(props) {
   );
 }
 
+function PlayAgainButton(props) {
+  return (
+    <Button className='play-again' bsStyle='primary' bsSize='small' onClick={props.onClick}>
+      Play again
+    </Button>
+  );
+}
+    
 function RenderDealerCards(props) {
   const hand = props.cards;
-  if (hand.length > 0) {
+  if (props.handInProgress || hand.length > 0) { //render if play in progress
     const cards = hand.map((card) =>
       <Image key={card} className='cards' src={card} />
     );
     return (
       <div>
-        <Col>Dealer: {props.total}</Col>
+        <Col>Dealer: </Col>
         {cards}
       </div>
     );
   }
   //render Welcome screen if zero cards in Dealer's hand
-  return <Welcome />;
+  return <Welcome numCards={props.numCards}/>;
 }
 
 function RenderPlayerCards(props) {
   const hand  = props.cards;
-  if (hand.length > 0) {
+  if (props.handInProgress || hand.length > 0) { //render if play in progress
     const cards = hand.map((card) =>
       <Image key={card} className='cards' src={card} />
     );
     return (
       <div>
-        <Col>Player: {props.total}</Col>
+        <Col>Player: </Col>
         {cards}
       </div>
     );
@@ -179,25 +202,20 @@ function RenderPlayerCards(props) {
   return null;
 }
 
-class Balance extends Component {
-  render() {
+function Balance(props) {
+  const money = props.money;
+  const handInProgress = props.handInProgress;
+  if (money < 1 && !handInProgress) {
+//      state.betting = false;
+//      state.startingNewHand = false;
+//      state.handInProgress = false;
     return (
-      <div>
-        <Col>You have £ {this.props.money}.</Col>
-      </div>
+      <Col>Sorry, out of money!</Col>
     );
   }
-}
-
-class Footer extends Component {
-  render() {
-    return (
-      <div>
-        <Col className='footer'>Written by N Syrotiuk. Powered by React</Col>
-        <Image className='App-logo' alt='logo' src={logo}/>
-      </div>
-    );
-  }
+  return (
+    <Col>You have £ {money}</Col>
+  );
 }
 
 class Game extends Component {
@@ -212,8 +230,7 @@ class Game extends Component {
       value: '', /* bet */
       balance: 500,
       startingNewHand: true,
-      handOver: false,
-      gameOver: false,
+      handInProgress: false,
       betting: true,
       status: '',
       playerPlaying: false,
@@ -221,6 +238,8 @@ class Game extends Component {
       dealerTotal: 0,
       playerAce: false,
       dealerAce: false,
+      playerBlackjack: false,
+      dealerBlackjack: false,
       double: false,
       split: false,
       splitCardsImages: [],
@@ -228,6 +247,7 @@ class Game extends Component {
       splitTotal: 0,
       playerBust: false,
       dealerBust: false,
+      gameOver: false,
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -257,20 +277,27 @@ class Game extends Component {
     } else {
         alert('Illegal bet: ' + bet + ' > ' + balance);
     }
-  }
+ }
 
   handleClickHit() {
+    console.log('Hit....');
     const images = this.state.playerCardsImages.slice();
     const values = this.state.playerCardsValues.slice();
-    const deck = this.state.deck;
-    const card = deck.images.pop();
+    const deck   = this.state.deck;
+    const card   = deck.images.pop();
     const value  = deck.values.pop();
-    let total = this.state.playerTotal;
+    let total    = this.state.playerTotal;
     images.push(card);
     values.push(value);
     total = total + value;
     if (value === 1) { this.setState({ playerAce: true }); }
-    if (value > 21)  { this.setState({ playerBust: true }); }
+    if (total > 21)  { 
+      this.setState({ 
+        playerBust: true,
+        playerPlaying: false,
+        handInProgress: false,
+      }); 
+    }
     this.setState({
       playerCardsImages: images,
       playerCardsValues: values,
@@ -281,10 +308,142 @@ class Game extends Component {
   }
 
   handleClickStand() {
+    console.log('Stand...');
+    const pt = this.state.playerTotal;
     this.setState({
       playerPlaying: false,
       betting: false,
       startingNewHand: false,
+    });
+
+    var bj = 0;
+    if (this.state.playerAce && pt === 11 && this.state.playerCardsImages.length === 2) {
+      this.setState({ 
+        playerBlackjack: true,
+        playerTotal: 'BJ',
+      });
+      bj = 1;
+      console.log('player BJ');
+    }
+
+    if (this.state.playerAce && pt < 12) {
+      this.setState({ playerTotal: pt + 10 });
+    }
+    //state of player hand complete
+
+    const images = this.state.dealerCardsImages.slice();
+    const values = this.state.dealerCardsValues.slice();
+    const deck   = this.state.deck;
+    var dt       = this.state.dealerTotal;
+ 
+    //get dealer's 2nd card
+    console.log('getting 2nd card for dealer...');
+    const card   = deck.images.pop();
+    const value  = deck.values.pop();
+    if (value === 1) { 
+      this.setState({ dealerAce: true });
+    }
+
+    images.push(card);
+    values.push(value);
+    dt = dt + value;
+    console.log('var dt is ' + dt);
+    this.setState({
+      dealerCardsImages: images,
+      dealerCardsValues: values,
+      dealerTotal: dt,
+    });
+
+    var flag = 0; //off if dealer has an Ace
+    if (values[0] === 1 || values[1] ===1) {
+      flag = 1;
+      console.log('yup, 1st or 2nd dealer card is an Ace');
+      if (dt === 11) {
+         this.setState({ 
+           dealerBlackjack: true,
+           dealerTotal: 'BJ',
+           handInProgress: false,
+         });
+         console.log('dealer BJ');
+         return null;
+      } else if (bj === 1) { //player BJ
+         this.setState({
+           handInProgress: false,
+         });
+         //dealer loses now
+         return null;
+      } else if (dt > 6) {
+         dt = dt + 10;
+         this.setState({ 
+           dealerTotal: dt,
+           handInProgress: false,
+         });
+         console.log('dealer has 17, 18, 19 or 20');
+         return null;
+      }
+    }
+
+    //get more cards for dealer if hand total < hard 17
+    var hand = dt;
+//    if (flag === 1) { hand = hand + 10; }
+    while (hand < 17 && !bj) {
+      console.log('get another card for dealer...');
+      const card   = deck.images.pop();
+      const value  = deck.values.pop();
+      dt = dt + value;
+      images.push(card);
+      values.push(value);
+      this.setState({
+        dealerCardsImages: images,
+        dealerCardsValues: values,
+        dealerTotal: dt,
+      });
+
+      if (value === 1) { 
+        this.setState({ dealerAce: true }); 
+        flag = 1;
+      }
+      if (dt > 21)  { 
+        this.setState({ 
+          dealerBust: true,
+          playerPlaying: false,
+          handInProgress: false,
+        });
+        return;
+      } 
+
+      if (flag === 1 && dt < 12) {
+        dt = dt + 10;
+        this.setState({ dealerTotal: dt });
+      }
+ 
+      hand = dt;
+//      if (flag === 1) { hand = hand + 10; }
+    }
+
+    this.setState({
+      handInProgress: false,
+    });
+  }
+ 
+  handleClickPlayAgain() {
+    this.setState({
+      startingNewHand: true,
+      betting: true,
+      value: '',
+      playerCardsImages: [],
+      playerCardsValues: [],
+      playerTotal: 0,
+      playerBust: false,
+      playerAce: false,
+      playerBlackjack: false,
+      dealerCardsImages: [],
+      dealerCardsValues: [],
+      dealerTotal: 0,
+      dealerBust: false,
+      dealerAce: false,
+      dealerBlackjack: false,
+      handInProgress: false,
     });
   }
 
@@ -296,7 +455,7 @@ class Game extends Component {
     if (hand.length > 0) {
       return (
         <div className='actions'>
-          <StandButton noplay={noPlay}      onClick={() => this.handleClickStand()}/>
+          <StandButton noPlay={noPlay}      onClick={() => this.handleClickStand()}/>
           <SplitButton noSplit={noSplit} />
           <DoubleButton noDouble={noDouble} />
           <HitButton noPlay={noPlay}        onClick={() => this.handleClickHit()}/>
@@ -306,12 +465,27 @@ class Game extends Component {
     return null;
   }
 
+  renderPlayAgain() {
+    let handInProgress = this.state.handInProgress;
+    let startingNewHand = this.state.startingNewHand;
+    if (startingNewHand || handInProgress) {
+       return null;
+    } else {
+       return (
+        <PlayAgainButton onClick={() => this.handleClickPlayAgain()} />
+      );
+    }
+  }
+
   render() {
+//    if (this.state.deck.images.length < 10) {
+
     const startingNewHand = this.state.startingNewHand;
     const betting   = this.state.betting;
     if (startingNewHand && !betting) {
       dealThreeCards(this.state);
     }
+    const handInProgress = this.state.handInProgress;
     const result = calculateWinner(this.state);
     let status;
     if (result) {
@@ -324,13 +498,14 @@ class Game extends Component {
       <Grid className='grid'>
         <Header />
         <div className='card-panel'>
-          <RenderDealerCards cards={this.state.dealerCardsImages} total={this.state.dealerTotal}/>
-          <RenderPlayerCards cards={this.state.playerCardsImages} total={this.state.playerTotal}/>
+          <RenderDealerCards cards={this.state.dealerCardsImages} total={this.state.dealerTotal} handInProgress={handInProgress} numCards={this.state.deck.images.length}/>
+          <RenderPlayerCards cards={this.state.playerCardsImages} total={this.state.playerTotal} handInProgress={handInProgress}/>
           {this.renderButtons()}
           <Status status={status} />
+          {this.renderPlayAgain()}
         </div>
         <div className='balance'>
-          <Balance money={this.state.balance} />
+          <Balance money={this.state.balance} handInProgress={handInProgress} />
         </div>
         <div className='bet'>
           <form onSubmit={this.handleSubmit}>
@@ -342,6 +517,7 @@ class Game extends Component {
               onChange={this.handleChange}
               disabled={!this.state.betting}
               alt='Bet?'
+              autoFocus='autofocus'
             />
           </form>
         </div>
@@ -363,36 +539,69 @@ function dealThreeCards(state) {
   getPlayerCard(state);
   getDealerCard(state);
   getPlayerCard(state);
+  state.handInProgress = true;
 }
 
 function getPlayerCard(state) {
   const deck = state.deck;
   const card = deck.images.pop();
-  const value = deck.values.pop()
+  const value = deck.values.pop();
+  if (value === 1) { state.playerAce = true; }
   state.playerTotal = state.playerTotal + value;
   state.playerCardsImages.push(card);
   state.playerCardsValues.push(value);
   console.log('getting PlayerCard, value is ' + value);
-  return [card, value];
+  return null;
 }
 
 function getDealerCard(state) {
   const deck = state.deck;
   const card = deck.images.pop();
   const value = deck.values.pop();
+  if (value === 1) { state.dealerAce = true; }
   state.dealerTotal = state.dealerTotal + value;
   state.dealerCardsImages.push(card);
   state.dealerCardsValues.push(value);
   console.log('getting DealerCard, value is ' + value);
-  return [card, value];
+  return null;
 }
 
 function calculateWinner(state) {
-  //to do
-
-
+ if (!state.handInProgress && !state.betting) {
+  if (state.playerBust) {
+     return 'Player bust !';
+  } else if (state.dealerBust) {
+     state.balance = state.balance + (Number(state.value) * 2);
+     var audioCheer = new Audio(cheer);
+     audioCheer.play();
+     console.log('balance ' + state.balance);
+     return 'Dealer bust! :)';
+   } else if (state.playerBlackjack && state.dealerBlackjack) {
+     state.balance = state.balance + Number(state.value);
+     return 'Draw';
+  } else if (state.playerBlackjack) {
+     state.balance = state.balance + Number(state.value) + (Number(state.value) * 1.5);
+     var audioDrum = new Audio(drum);
+     audioDrum.play();
+     console.log('balance ' + state.balance);
+     return 'Blackjack pays 3:2';
+  } else if (state.dealerBlackjack) {
+     var audioBoo = new Audio(boo);
+     audioBoo.play();
+     return 'Dealer has Blackjack!';
+  } else if (state.playerTotal === state.dealerTotal) {
+     state.balance = state.balance + Number(state.value);
+     console.log('balance ' + state.balance);
+     return 'Draw  :<|';
+  } else if (state.playerTotal > state.dealerTotal) {
+     state.balance = state.balance + (Number(state.value) * 2);
+     console.log('balance ' + state.balance);
+     return 'Player wins! :)';
+  } else {
+     return 'Dealer wins! :(';
+  }
+ } return null;
 }
-
 
 function shuffleDeck() {
 /* Returns array shuffledDeck */
