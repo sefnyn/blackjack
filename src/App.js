@@ -111,8 +111,7 @@ function Welcome(props) {
 function Footer() {
   return (
     <div>
-      <Col className='footer'>BJ v.0.6 written by Syrotiuk. Powered by React</Col>
-      <Image className='App-logo' alt='logo' src={logo}/>
+      <Col className='footer'>BJ v.0.7, a ReactJS app written by N Syrotiuk.</Col> <Image className='App-logo' alt='logo' src={logo}/>
     </div>
   );
 }
@@ -240,14 +239,16 @@ class Game extends Component {
       dealerAce: false,
       playerBlackjack: false,
       dealerBlackjack: false,
-      double: false,
-      split: false,
+      double: false, //player doubled
+      split: false,  //player split
       splitCardsImages: [],
       splitCardsValues: [],
       splitTotal: 0,
       playerBust: false,
       dealerBust: false,
       gameOver: false,
+      doubleAllowed: false,
+      splitAllowed: false,
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -307,6 +308,28 @@ class Game extends Component {
     });
   }
 
+  handleClickDouble() {
+    console.log('Double...');
+    const images = this.state.playerCardsImages.slice();
+    const values = this.state.playerCardsValues.slice();
+    const deck   = this.state.deck;
+    const card   = deck.images.pop();
+    const value  = deck.values.pop();
+    let total    = this.state.playerTotal;
+    images.push(card);
+    values.push(value);
+    total = total + value;
+    if (value === 1) { this.setState({ playerAce: true }); }
+    this.setState({
+      double: true,
+      doubleAllowed: false,
+      playerCardsImages: images,
+      playerCardsValues: values,
+      playerTotal: total,
+    });
+    this.handleClickStand();
+  }
+
   handleClickStand() {
     console.log('Stand...');
     const pt = this.state.playerTotal;
@@ -329,6 +352,7 @@ class Game extends Component {
     if (this.state.playerAce && pt < 12) {
       this.setState({ playerTotal: pt + 10 });
     }
+    console.log('player hand complete. total is ' + this.state.playerTotal);
     //state of player hand complete
 
     const images = this.state.dealerCardsImages.slice();
@@ -427,6 +451,12 @@ class Game extends Component {
   }
  
   handleClickPlayAgain() {
+    if (this.state.deck.values.length < 10) {
+      this.setState({
+        deck: shuffleDeck()
+      });
+    }
+
     this.setState({
       startingNewHand: true,
       betting: true,
@@ -444,21 +474,23 @@ class Game extends Component {
       dealerAce: false,
       dealerBlackjack: false,
       handInProgress: false,
+      double: false,
+      split: false,
     });
   }
 
   renderButtons() {
     let hand     = this.state.playerCardsValues;
     let noPlay   = !this.state.playerPlaying;
-    let noSplit  = !this.state.split;
-    let noDouble = !this.state.double;
+    let noSplit  = !this.state.splitAllowed;
+    let noDouble = !this.state.doubleAllowed;
     if (hand.length > 0) {
       return (
         <div className='actions'>
-          <StandButton noPlay={noPlay}      onClick={() => this.handleClickStand()}/>
+          <StandButton noPlay={noPlay}      onClick={() => this.handleClickStand()} />
           <SplitButton noSplit={noSplit} />
-          <DoubleButton noDouble={noDouble} />
-          <HitButton noPlay={noPlay}        onClick={() => this.handleClickHit()}/>
+          <DoubleButton noDouble={noDouble} onClick={() => this.handleClickDouble()} />
+          <HitButton noPlay={noPlay}        onClick={() => this.handleClickHit()} />
         </div>    
       );
     }
@@ -540,6 +572,8 @@ function dealThreeCards(state) {
   getDealerCard(state);
   getPlayerCard(state);
   state.handInProgress = true;
+  state.doubleAllowed = isDoubleAllowed(state);
+  console.log('double allowed: ' + state.doubleAllowed);
 }
 
 function getPlayerCard(state) {
@@ -571,7 +605,11 @@ function calculateWinner(state) {
   if (state.playerBust) {
      return 'Player bust !';
   } else if (state.dealerBust) {
-     state.balance = state.balance + (Number(state.value) * 2);
+     if (state.double) {
+        state.balance = state.balance + (Number(state.value) * 4);
+     } else {
+        state.balance = state.balance + (Number(state.value) * 2);
+     }
      var audioCheer = new Audio(cheer);
      audioCheer.play();
      console.log('balance ' + state.balance);
@@ -594,13 +632,37 @@ function calculateWinner(state) {
      console.log('balance ' + state.balance);
      return 'Draw  :<|';
   } else if (state.playerTotal > state.dealerTotal) {
-     state.balance = state.balance + (Number(state.value) * 2);
+     var winnings;
+     if (state.double) {
+        winnings = Number(state.value) * 4;
+        state.balance = state.balance + winnings;
+     } else {
+        winnings = Number(state.value) * 2;
+        state.balance = state.balance + winnings;
+     }
      console.log('balance ' + state.balance);
-     return 'Player wins! :)';
+     return 'Player wins £' + winnings + '!';
   } else {
+     if (state.double) {
+       state.balance = state.balance - Number(state.value);
+     }
      return 'Dealer wins! :(';
   }
  } return null;
+}
+
+function isDoubleAllowed(state) {
+  const total = state.playerCardsValues[0] + state.playerCardsValues[1];
+  const balance = state.balance;
+  const bet = state.value;
+  if (   total >= 9 
+      && total <= 11 
+      && balance - bet > 0
+      && !state.playerAce
+      && state.playerCardsValues.length === 2) {
+    return true;
+  }
+  return false;
 }
 
 function shuffleDeck() {
