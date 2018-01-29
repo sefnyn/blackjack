@@ -103,7 +103,7 @@ function Welcome(props) {
       <Image className='big-card' src={cardback} />
       <Image className='big-card' src={cardback} />
       <Image className='big-card' src={js} />
-      <RenderCardsInDeck numCards={props.numCards} />
+      <RenderRulesEtc numCards={props.numCards} />
     </div>
   );
 }
@@ -111,14 +111,21 @@ function Welcome(props) {
 function Footer() {
   return (
     <div>
-      <Col className='footer'>BJ v.0.7, a ReactJS app written by N Syrotiuk.</Col> <Image className='App-logo' alt='logo' src={logo}/>
+      <Col className='footer'>BJ v.0.8, a ReactJS app written by N Syrotiuk.</Col> <Image className='App-logo' alt='logo' src={logo}/>
     </div>
   );
 }
 
-function RenderCardsInDeck(props) {
+function RenderRulesEtc(props) {
   return (
-    <Col className='numcards'>{props.numCards} cards in deck</Col>
+    <div>
+      <Col className='rules'>House rules:</Col>
+      <Col className='rules'>Dealer stays on 17.</Col>
+      <Col className='rules'>Blackjack consists of Ace & 10/J/Q/K on first two cards only, and pays 3:2.</Col>
+      <Col className='rules'>Double your bet on 9, 10 or 11 only.</Col>
+      <Col className='rules'>Split not yet implemented.</Col>
+      <Col className='rules'>Info: {props.numCards} cards in deck.</Col>
+    </div>
   );
 }
 
@@ -213,7 +220,7 @@ function Balance(props) {
     );
   }
   return (
-    <Col>You have £ {money}</Col>
+    <Col>You have £{money}</Col>
   );
 }
 
@@ -239,8 +246,8 @@ class Game extends Component {
       dealerAce: false,
       playerBlackjack: false,
       dealerBlackjack: false,
-      double: false, //player doubled
-      split: false,  //player split
+      double: false, //player chose to double
+      split: false,  //player chose to split
       splitCardsImages: [],
       splitCardsValues: [],
       splitTotal: 0,
@@ -266,17 +273,23 @@ class Game extends Component {
     e.preventDefault();
     const bet = this.state.value;
     const balance = this.state.balance;
-    if (bet <= balance) {
-      const playerCardsImages = this.state.playerCardsImages.slice();
-      this.setState({
-        value: bet,
-        playerCardsImages: playerCardsImages,
-        betting: false,
-        playerPlaying: true,
-        balance: balance - bet,
-      });
-    } else {
+
+    //eslint-disable-next-line
+    if (bet == 0 && balance == 0) {
+      alert('Game over');
+    } else if (bet > balance) {
         alert('Illegal bet: ' + bet + ' > ' + balance);
+    } else if (bet <= 0) {
+        alert('Illegal bet: ' + bet + ' <= zero');
+    } else {
+       const playerCardsImages = this.state.playerCardsImages.slice();
+       this.setState({
+         value: bet,
+         playerCardsImages: playerCardsImages,
+         betting: false,
+         playerPlaying: true,
+         balance: balance - bet,
+       });
     }
  }
 
@@ -315,17 +328,23 @@ class Game extends Component {
     const deck   = this.state.deck;
     const card   = deck.images.pop();
     const value  = deck.values.pop();
-    let total    = this.state.playerTotal;
+    let total = this.state.playerTotal;
+    let bal      = this.state.balance;
+    bal = bal - this.state.value;
     images.push(card);
     values.push(value);
     total = total + value;
-    if (value === 1) { this.setState({ playerAce: true }); }
+    if (value === 1) { 
+      this.setState({ playerAce: true });
+      total = total + 10;
+    }
     this.setState({
       double: true,
       doubleAllowed: false,
       playerCardsImages: images,
       playerCardsValues: values,
       playerTotal: total,
+      balance: bal,
     });
     this.handleClickStand();
   }
@@ -359,7 +378,16 @@ class Game extends Component {
     const values = this.state.dealerCardsValues.slice();
     const deck   = this.state.deck;
     var dt       = this.state.dealerTotal;
- 
+
+    //dealer may not need a 2nd card
+    if (bj === 1 && values[0] > 1 && values[0] < 10) {
+       this.setState({
+         handInProgress: false,
+       });
+       //dealer loses now
+       return null;
+    }
+
     //get dealer's 2nd card
     console.log('getting 2nd card for dealer...');
     const card   = deck.images.pop();
@@ -641,11 +669,9 @@ function calculateWinner(state) {
         state.balance = state.balance + winnings;
      }
      console.log('balance ' + state.balance);
+     winnings = winnings / 2;
      return 'Player wins £' + winnings + '!';
   } else {
-     if (state.double) {
-       state.balance = state.balance - Number(state.value);
-     }
      return 'Dealer wins! :(';
   }
  } return null;
@@ -657,7 +683,7 @@ function isDoubleAllowed(state) {
   const bet = state.value;
   if (   total >= 9 
       && total <= 11 
-      && balance - bet > 0
+      && balance - bet >= 0
       && !state.playerAce
       && state.playerCardsValues.length === 2) {
     return true;

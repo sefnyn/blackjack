@@ -35,7 +35,7 @@ small {
 
 .card-panel {
   background-color: darkred;
-  height: 375px;
+  height: 395px;
   color: white;
   padding: 10px;
   border: 3px solid;
@@ -142,7 +142,7 @@ Button {
   margin-left: 25px;
 }
 
-.numcards {
+.rules {
   font-size: 0.8em;
-  margin-left: 8em;
+  margin-left: 25px;
 }
