@@ -104,7 +104,7 @@ small {
 }
 
 .footer {
-  font-size: 0.8em;
+  font-size: 0.7em;
   float: left;
   margin: 12px 0px 0px 3px;
 }
@@ -114,7 +114,7 @@ small {
 }
 
 Button {
-  margin: 20px 13px 13px 0px;
+  margin: 20px 11px 11px 0px;
   float: left;
 }
 
@@ -143,6 +143,6 @@ Button {
 }
 
 .rules {
-  font-size: 0.8em;
+  font-size: 0.7em;
   margin-left: 25px;
 }

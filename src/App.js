@@ -111,7 +111,7 @@ function Welcome(props) {
 function Footer() {
   return (
     <div>
-      <Col className='footer'>BJ v.0.8, a ReactJS app written by N Syrotiuk.</Col> <Image className='App-logo' alt='logo' src={logo}/>
+      <Col className='footer'>BJ v.0.9, a ReactJS app written by N Syrotiuk.</Col> <Image className='App-logo' alt='logo' src={logo}/>
     </div>
   );
 }
@@ -406,9 +406,9 @@ class Game extends Component {
       dealerTotal: dt,
     });
 
-    var flag = 0; //off if dealer has an Ace
+    var dealerAceFlag = 0; //off if dealer has an Ace
     if (values[0] === 1 || values[1] ===1) {
-      flag = 1;
+      dealerAceFlag = 1;
       console.log('yup, 1st or 2nd dealer card is an Ace');
       if (dt === 11) {
          this.setState({ 
@@ -453,7 +453,7 @@ class Game extends Component {
 
       if (value === 1) { 
         this.setState({ dealerAce: true }); 
-        flag = 1;
+        dealerAceFlag = 1;
       }
       if (dt > 21)  { 
         this.setState({ 
@@ -464,7 +464,7 @@ class Game extends Component {
         return;
       } 
 
-      if (flag === 1 && dt < 12) {
+      if (dealerAceFlag === 1 && dt < 12) {
         dt = dt + 10;
         this.setState({ dealerTotal: dt });
       }
@@ -629,8 +629,13 @@ function getDealerCard(state) {
 }
 
 function calculateWinner(state) {
- if (!state.handInProgress && !state.betting) {
+var audioCheer = new Audio(cheer);
+var audioDrum = new Audio(drum);
+var audioBoo = new Audio(boo);
+ 
+if (!state.handInProgress && !state.betting) {
   if (state.playerBust) {
+     audioBoo.play();
      return 'Player bust !';
   } else if (state.dealerBust) {
      if (state.double) {
@@ -638,21 +643,18 @@ function calculateWinner(state) {
      } else {
         state.balance = state.balance + (Number(state.value) * 2);
      }
-     var audioCheer = new Audio(cheer);
      audioCheer.play();
      console.log('balance ' + state.balance);
      return 'Dealer bust! :)';
    } else if (state.playerBlackjack && state.dealerBlackjack) {
      state.balance = state.balance + Number(state.value);
-     return 'Draw';
+     return 'Draw  :<|';
   } else if (state.playerBlackjack) {
      state.balance = state.balance + Number(state.value) + (Number(state.value) * 1.5);
-     var audioDrum = new Audio(drum);
      audioDrum.play();
      console.log('balance ' + state.balance);
      return 'Blackjack pays 3:2';
   } else if (state.dealerBlackjack) {
-     var audioBoo = new Audio(boo);
      audioBoo.play();
      return 'Dealer has Blackjack!';
   } else if (state.playerTotal === state.dealerTotal) {
@@ -670,8 +672,10 @@ function calculateWinner(state) {
      }
      console.log('balance ' + state.balance);
      winnings = winnings / 2;
+     audioCheer.play();
      return 'Player wins £' + winnings + '!';
   } else {
+     audioBoo.play();
      return 'Dealer wins! :(';
   }
  } return null;
