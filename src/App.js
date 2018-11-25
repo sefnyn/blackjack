@@ -111,7 +111,7 @@ function Welcome(props) {
 function Footer() {
   return (
     <div>
-      <Col className='footer'>BJ v.0.9, a ReactJS app written by N Syrotiuk.</Col> <Image className='App-logo' alt='logo' src={logo}/>
+      <Col className='footer'>BJ v.0.91, a ReactJS app written by N Syrotiuk.</Col> <Image className='App-logo' alt='logo' src={logo}/>
     </div>
   );
 }
@@ -271,15 +271,22 @@ class Game extends Component {
   handleSubmit(e) {
     console.log('Bet entered: ' + this.state.value);
     e.preventDefault();
-    const bet = this.state.value;
+    var bet = this.state.value;
     const balance = this.state.balance;
+
+    //default bet is EVERYTHING
+    //eslint-disable-next-line
+    if (bet == 0 && balance != 0) {
+      alert('You bet everything: £' + balance);
+      bet = balance;
+    }
 
     //eslint-disable-next-line
     if (bet == 0 && balance == 0) {
       alert('Game over');
     } else if (bet > balance) {
         alert('Illegal bet: ' + bet + ' > ' + balance);
-    } else if (bet <= 0) {
+    } else if (bet < 0) {
         alert('Illegal bet: ' + bet + ' <= zero');
     } else {
        const playerCardsImages = this.state.playerCardsImages.slice();
@@ -572,7 +579,6 @@ class Game extends Component {
             <input className='enter'
               type='number'
               placeholder='Bet?'
-              required
               value={this.state.value}
               onChange={this.handleChange}
               disabled={!this.state.betting}
