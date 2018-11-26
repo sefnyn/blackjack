@@ -277,7 +277,6 @@ class Game extends Component {
     //default bet is EVERYTHING
     //eslint-disable-next-line
     if (bet == 0 && balance != 0) {
-      alert('You bet everything: £' + balance);
       bet = balance;
     }
 
