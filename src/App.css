@@ -16,11 +16,11 @@ body {
   height: 540px;
   width:  330px;
   padding: 20px;
-  color: green;
+  color: #6e6e6e;
 }
 
 .header {
-  background-color: teal;
+  background-color: black;
   height: 60px;
   color: white;
   padding: 10px;
@@ -33,20 +33,54 @@ small {
   font-size: .5em;
 }
 
-.computer {
-  background-color: green;
-  height: 120px;
+.card-panel {
+  background-color: darkred;
+  height: 395px;
   color: white;
-  padding: 20px;
+  padding: 10px;
   border: 3px solid;
+  margin-left: auto;
+  margin-right: auto;
 } 
 
-.player {
-  background-color: #2aa;
-  height: 120px;
+.cards {
+  width: 20%;
+  height: auto;
+}
+
+.balance {
+  background-color: slategrey;
+  height: 50px;
   color: white;
-  padding: 20px;
+  padding-left: 10px;
+  padding-top: 7px;
   border: 3px solid;
+  width: 195px;
+  font-size: 1.3em;
+  float: left;
+}
+
+.bet {
+  width: 90px;
+  height: 44px;
+  font-size: 1.3em;
+  background-color: lightgrey;
+  color: black;
+  padding-left: 2px;
+  padding-top: 2px;
+
+  border-width: 0px;
+  border: none;
+  margin-left: 2px;
+  margin-top: 2px;
+  float: left;
+}
+
+.enter {
+  width: 86px;
+  height: 40px;
+  font-size: 1.1em;
+  background-color: lightgrey;
 }
 
 .player-button {
@@ -55,11 +89,14 @@ small {
 }
 
 .status {
-  background-color: #b27;
-  height: 135px;
+  margin: 20px 10px 10px 10px;
+  font-size: 1.3em;
   color: white;
-  padding: 20px;
-  border: 3px solid;
+  display: inline-block;
+}
+
+.play-again {
+  float: right;
 }
 
 .startbutton {
@@ -67,26 +104,18 @@ small {
 }
 
 .footer {
-  font-size: 0.8em;
+  font-size: 0.7em;
   float: left;
   margin: 12px 0px 0px 3px;
 }
 
-#square {
-  display: inline-block;
-  width: 50px;
-  height: 50px;
-  background-color: #fff;
-  border: 3px solid;
-  border-color: #000;
-  margin: 3px 3px 3px 0px; /* top right bottom left */
-  color: black;
-  font-size: 2em;
-  text-align: center;
+.actions {
+  margin-left: 10px;
 }
 
 Button {
-  margin: 5px 5px 5px 0px;
+  margin: 20px 11px 11px 0px;
+  float: left;
 }
 
 .App-title {
@@ -105,4 +134,15 @@ Button {
 .result {
   font-weight: bold;
   font-size: 1.3em;
+}
+
+.big-card {
+  width: 35%;
+  margin: 5px;
+  margin-left: 25px;
+}
+
+.rules {
+  font-size: 0.7em;
+  margin-left: 25px;
 }
