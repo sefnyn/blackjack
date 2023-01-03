@@ -216,7 +216,7 @@ function Balance(props) {
 //      state.startingNewHand = false;
 //      state.handInProgress = false;
     return (
-      <Col>Sorry, out of £!</Col>
+      <Col>Sorry, out of £££</Col>
     );
   }
   return (
